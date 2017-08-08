@@ -24,11 +24,32 @@ endif
 " Function to send keys to tmux
 " useful if you want to stop some command with <c-c> in tmux.
 function! Send_keys_to_Tmux(keys)
+  call system("tmux send-keys -t " . s:tmux_target() . " " . a:keys)
+endfunction
+
+" Main function.
+" Use it in your script if you want to send text to a tmux session.
+function! Send_to_Tmux(text)
   if !exists("g:tslime")
     call <SID>Tmux_Vars()
   endif
 
-  call system("tmux send-keys -t " . s:tmux_target() . " " . a:keys)
+  call system("tmux load-buffer -", a:text)
+  call system("tmux paste-buffer -d -t " . s:tmux_target())
+
+  " Compute how many newlines we need to add
+  let trailing_newlines = matchstr(a:text, '\v\n*$')
+  let spaces_to_add = g:tslime_ensure_trailing_newlines - strlen(trailing_newlines)
+
+  " Newline characters need to be " quoted
+  let text = '"'
+  while spaces_to_add > 0
+    let spaces_to_add -= 1
+    let text .= "\n"
+  endwhile
+  let text .= '"'
+
+  call Send_keys_to_Tmux(text)
 endfunction
 
 function! s:tmux_target()
@@ -38,23 +59,6 @@ endfunction
 function! s:set_tmux_buffer(text)
   let buf = substitute(a:text, "'", "\\'", 'g')
   call system("tmux load-buffer -", buf)
-endfunction
-
-function! s:ensure_newlines(text)
-  let text = a:text
-  let trailing_newlines = matchstr(text, '\v\n*$')
-  let spaces_to_add = g:tslime_ensure_trailing_newlines - strlen(trailing_newlines)
-
-  while spaces_to_add > 0
-    let spaces_to_add -= 1
-    let text .= "\n"
-  endwhile
-
-  return text
-endfunction
-
-function! Send_to_Tmux(text)
-  call Send_keys_to_Tmux('"'.escape(s:ensure_newlines(a:text), '\"$').'"')
 endfunction
 
 " Session completion
