@@ -17,6 +17,9 @@ endif
 if !exists("g:tslime_visual_mapping")
   let g:tslime_visual_mapping = '<c-c><c-c>'
 endif
+if !exists("g:tslime_operator")
+  let g:tslime_operator = '<c-c>o'
+endif
 if !exists("g:tslime_vars_mapping")
   let g:tslime_vars_mapping = '<c-c>v'
 endif
@@ -147,6 +150,27 @@ function! s:Tmux_Vars()
   endif
 endfunction
 
+" Based on the example in ':help :map-operator'
+function! s:TslimeOperator(motion_type)
+  let sel_save = &selection
+  let &selection = "inclusive"
+  let reg_save = @@
+
+  if a:motion_type == 'line'
+    silent execute "normal! '[V']y"
+  elseif a:motion_type == 'char'
+    silent execute "normal! `[v`]y"
+  elseif a:motion_type == 'block'
+    silent execute "normal! `[\<C-V>`]y"
+  endif
+
+  call Send_to_Tmux(@@)
+
+  let &selection = sel_save
+  let @@ = reg_save
+endfunction
+
 execute "vnoremap" . g:tslime_visual_mapping . ' "ry:call Send_to_Tmux(@r)<CR>'
 execute "nnoremap" . g:tslime_normal_mapping . ' vip"ry:call Send_to_Tmux(@r)<CR>'
+execute "nnoremap" . g:tslime_operator       . ' :set operatorfunc=<SID>TslimeOperator<CR>g@'
 execute "nnoremap" . g:tslime_vars_mapping   . ' :call <SID>Tmux_Vars()<CR>'
