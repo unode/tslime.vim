@@ -170,7 +170,7 @@ function! s:TslimeOperator(motion_type)
   let @@ = reg_save
 endfunction
 
-execute "vnoremap" . g:tslime_visual_mapping . ' "ry:call Send_to_Tmux(@r)<CR>'
-execute "nnoremap" . g:tslime_normal_mapping . ' vip"ry:call Send_to_Tmux(@r)<CR>'
+execute "nnoremap" . g:tslime_normal_mapping . ' mtvip"ry:call Send_to_Tmux(@r)<CR>`t'
+execute "vnoremap" . g:tslime_visual_mapping . ' mt"ry:call Send_to_Tmux(@r)<CR>`tgv'
 execute "nnoremap" . g:tslime_operator       . ' :set operatorfunc=<SID>TslimeOperator<CR>g@'
 execute "nnoremap" . g:tslime_vars_mapping   . ' :call <SID>Tmux_Vars()<CR>'
