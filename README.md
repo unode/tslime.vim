@@ -27,50 +27,34 @@ let g:tslime_always_current_window = 1
 These are disabled by default, meaning you will have the ability to choose from
 every session/window/pane combination.
 
+
+With some interpreters it is often necessary to input an empty line at the end
+of a code block in order to trigger code execution. Such is the case for
+instance with the Python interpreter.
+You can specify language specific settings with autocommands
+
+```vim
+au FileType python let g:tslime_ensure_trailing_newlines = 2
+```
+
+
 Setting Keybindings
 -------------------
 
-In this fork of tslime.vim, keybindings are not set automatically for you.
-Instead, you can map whatever you'd like to one of the plugin-specific bindings
-in your `.vimrc` file.
-
-To get the old defaults, put the following in your `.vimrc`:
+You can modify default keybindings by setting:
 
 ``` vim
-vmap <C-c><C-c> <Plug>SendSelectionToTmux
-nmap <C-c><C-c> <Plug>NormalModeSendToTmux
-nmap <C-c>r <Plug>SetTmuxVars
+" To grab the current method that a cursor is in normal mode
+let g:tslime_normal_mapping = '<c-c><c-c>'
+" Or a single line at a time
+let g:tslime_normal_next    = '<a-enter>'
+
+" To send a selection in visual mode to tmux
+let g:tslime_visual_mapping = '<c-c><c-c>'
+
+" To send any text object or motion to tmux from normal mode
+let g:tslime_operator       = '<c-c>o'
+
+" Use the following to reset the session, window, and pane info
+let g:tslime_vars_mapping   = '<c-c>v'
 ```
-
-To send a selection in visual mode to vim, set the following in your `.vimrc`:
-
-``` vim
-vmap <your_key_combo> <Plug>SendSelectionToTmux
-```
-
-To grab the current method that a cursor is in normal mode, set the following:
-
-``` vim
-nmap <your_key_combo> <Plug>NormalModeSendToTmux
-```
-
-To send any text object or motion to tmux from normal mode, set the following:
-
-```vim
-nmap <your_key_combo> <Plug>TslimeOperator
-```
-
-Use the following to reset the session, window, and pane info:
-
-``` vim
-nmap <your_key_combo> <Plug>SetTmuxVars
-```
-
-Have a command you run frequently, use this:
-
-``` vim
-nmap <your_key_combo> :Tmux <your_command><CR>
-```
-
-More info about the `<Plug>` and other mapping syntax can be found
-[here](http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_3\) ).
