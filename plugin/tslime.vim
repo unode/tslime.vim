@@ -14,6 +14,9 @@ endif
 if !exists("g:tslime_normal_mapping")
   let g:tslime_normal_mapping = '<c-c><c-c>'
 endif
+if !exists("g:tslime_normal_next")
+  let g:tslime_normal_next = '<a-Enter>'
+endif
 if !exists("g:tslime_visual_mapping")
   let g:tslime_visual_mapping = '<c-c><c-c>'
 endif
@@ -39,6 +42,10 @@ function! Send_to_Tmux(text)
 
   call system("tmux load-buffer -b tslime -", a:text)
   call system("tmux paste-buffer -dp -b tslime -t " . s:tmux_target())
+endfunction
+
+function! Send_to_Tmux_with_newlines(text)
+  call Send_to_Tmux(a:text)
 
   " Compute how many newlines we need to add
   let trailing_newlines = matchstr(a:text, '\v\n*$')
@@ -164,13 +171,14 @@ function! s:TslimeOperator(motion_type)
     silent execute "normal! `[\<C-V>`]y"
   endif
 
-  call Send_to_Tmux(@@)
+  call Send_to_Tmux_with_newlines(@@)
 
   let &selection = sel_save
   let @@ = reg_save
 endfunction
 
-execute "nnoremap" . g:tslime_normal_mapping . ' mtvip"ry:call Send_to_Tmux(@r)<CR>`t'
-execute "vnoremap" . g:tslime_visual_mapping . ' mt"ry:call Send_to_Tmux(@r)<CR>`tgv'
-execute "nnoremap" . g:tslime_operator       . ' :set operatorfunc=<SID>TslimeOperator<CR>g@'
-execute "nnoremap" . g:tslime_vars_mapping   . ' :call <SID>Tmux_Vars()<CR>'
+execute "nnoremap <silent> " . g:tslime_normal_mapping . ' mtvip"ry:call Send_to_Tmux_with_newlines(@r)<CR>`t'
+execute "nnoremap <silent> " . g:tslime_normal_next    . ' V"ry:call Send_to_Tmux(@r)<CR>j'
+execute "vnoremap <silent> " . g:tslime_visual_mapping . ' mt"ry:call Send_to_Tmux_with_newlines(@r)<CR>`tgv'
+execute "nnoremap <silent> " . g:tslime_operator       . ' :set operatorfunc=<SID>TslimeOperator<CR>g@'
+execute "nnoremap <silent> " . g:tslime_vars_mapping   . ' :call <SID>Tmux_Vars()<CR>'
