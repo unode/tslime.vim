@@ -18,7 +18,7 @@ if !exists("g:tslime_normal_next")
   let g:tslime_normal_next = '<a-Enter>'
 endif
 if !exists("g:tslime_visual_mapping")
-  let g:tslime_visual_mapping = '<c-c><c-c>'
+  let g:tslime_visual_mapping = '<a-Enter>'
 endif
 if !exists("g:tslime_operator")
   let g:tslime_operator = '<c-c>o'
