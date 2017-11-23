@@ -42,6 +42,12 @@ function! Send_to_Tmux(text)
 
   call system("tmux load-buffer -b tslime -", a:text)
   call system("tmux paste-buffer -dp -b tslime -t " . s:tmux_target())
+
+  " If we got just a newline character, trigger 'ensure_trailing_newlines'
+  " to finalize the current block
+  if a:text == "\n"
+    call Send_to_Tmux_with_newlines("")
+  endif
 endfunction
 
 function! Send_to_Tmux_with_newlines(text)
